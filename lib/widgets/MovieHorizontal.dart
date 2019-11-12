@@ -4,7 +4,18 @@ import 'package:movies_app/pages/Detail.dart';
 
 import 'SlideRightRoute.dart';
 
-class MovieHorizontal extends StatelessWidget {
+class MovieHorizontal extends StatefulWidget {
+  final List<Movie> movies;
+  final Function nextPage;
+
+  MovieHorizontal({@required this.movies, @required this.nextPage});
+
+  @override
+  _MovieHorizontalState createState() =>
+      _MovieHorizontalState(movies: movies, nextPage: nextPage);
+}
+
+class _MovieHorizontalState extends State<MovieHorizontal> {
   final List<Movie> movies;
   final Function nextPage;
 
@@ -13,21 +24,22 @@ class MovieHorizontal extends StatelessWidget {
   final _pageController =
       PageController(keepPage: true, initialPage: 1, viewportFraction: 0.3);
 
-  MovieHorizontal({@required this.movies, @required this.nextPage});
+  _MovieHorizontalState({@required this.movies, @required this.nextPage});
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+
     _pageController.addListener(() {
       if (_pageController.position.pixels >=
           _pageController.position.maxScrollExtent - 400) {
         nextPage();
       }
     });
-
-    return _wrapper(context);
   }
 
-  Widget _wrapper(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final _screenSize = MediaQuery.of(context).size;
 
     return Container(
@@ -89,6 +101,9 @@ class MovieHorizontal extends StatelessWidget {
 
   Widget _image({BuildContext context, int index, ImageProvider image}) {
     final _screenSize = MediaQuery.of(context).size;
+    final Movie _movie = movies[index];
+
+    _movie.uniqueId = '${_movie.id}-movie-horizontal';
 
     return Container(
       //  height: _screenSize.height * 0.18,
@@ -98,19 +113,22 @@ class MovieHorizontal extends StatelessWidget {
           maxWidth: _cardWidth,
           minHeight: _screenSize.height * 0.175,
           maxHeight: _screenSize.height * 0.175),
-      child: ClipRRect(
-        clipBehavior: Clip.antiAlias,
-        borderRadius: BorderRadius.circular(10.0),
-        //elevation: 2.0,
-        child: FadeInImage(
-          placeholder: AssetImage('lib/assets/cat_loader.gif'),
-          image: image,
-          fit: BoxFit.cover,
+      child: Hero(
+        tag: _movie.uniqueId,
+        child: ClipRRect(
+          clipBehavior: Clip.antiAlias,
+          borderRadius: BorderRadius.circular(10.0),
+          //elevation: 2.0,
+          child: FadeInImage(
+            placeholder: AssetImage('lib/assets/liquid-loading.gif'),
+            image: image,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
   }
 
-  void _onTap(BuildContext context, Movie movie) => Navigator.push(
-      context, SlideRightRoute(page: Detail(movie: movie)));
+  void _onTap(BuildContext context, Movie movie) =>
+      Navigator.push(context, SlideRightRoute(page: Detail(movie: movie)));
 }

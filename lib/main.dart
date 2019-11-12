@@ -13,7 +13,7 @@ class Movies extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (BuildContext context) => Home(),
-        'detail': (BuildContext context) => Detail()
+        //  'detail': (BuildContext context) => Detail()
       },
     );
   }
